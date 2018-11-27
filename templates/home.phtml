@@ -32,6 +32,8 @@
     <meta name="msapplication-notification" content="cycle=1; frequency=30; polling-uri=<?= $this->base; ?>win8notifs" />
     <meta name="msapplication-badge" content="frequency=30; polling-uri=<?= $this->base; ?>badge" />
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
     <!--  RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="feed" />
 
@@ -49,6 +51,55 @@
     <?php endif; ?>
     <link rel="stylesheet" href="<?= \helpers\View::getGlobalCssFileName(); ?>" />
 
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <?php
+
+    function vn_to_str ($str){
+
+        $unicode = array(
+
+            'a'=>'á|à|ả|ã|ạ|ă|ắ|ặ|ằ|ẳ|ẵ|â|ấ|ầ|ẩ|ẫ|ậ',
+
+            'd'=>'đ',
+
+            'e'=>'é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ',
+
+            'i'=>'í|ì|ỉ|ĩ|ị',
+
+            'o'=>'ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ',
+
+            'u'=>'ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự',
+
+            'y'=>'ý|ỳ|ỷ|ỹ|ỵ',
+
+            'A'=>'Á|À|Ả|Ã|Ạ|Ă|Ắ|Ặ|Ằ|Ẳ|Ẵ|Â|Ấ|Ầ|Ẩ|Ẫ|Ậ',
+
+            'D'=>'Đ|Ð',
+
+            'E'=>'É|È|Ẻ|Ẽ|Ẹ|Ê|Ế|Ề|Ể|Ễ|Ệ',
+
+            'I'=>'Í|Ì|Ỉ|Ĩ|Ị',
+
+            'O'=>'Ó|Ò|Ỏ|Õ|Ọ|Ô|Ố|Ồ|Ổ|Ỗ|Ộ|Ơ|Ớ|Ờ|Ở|Ỡ|Ợ',
+
+            'U'=>'Ú|Ù|Ủ|Ũ|Ụ|Ư|Ứ|Ừ|Ử|Ữ|Ự',
+
+            'Y'=>'Ý|Ỳ|Ỷ|Ỹ|Ỵ',
+
+        );
+
+        foreach($unicode as $nonUnicode=>$uni){
+
+            $str = preg_replace("/($uni)/iu", $nonUnicode, $str);
+
+        }
+        $str = str_replace(' ','-',$str);
+        $str = mb_strtolower($str);
+
+        return $str;
+
+    }
+    ?>
 </head>
 <body class="
     <?= $this->publicMode === true ? 'publicmode' : ''; ?>
@@ -129,72 +180,54 @@
         <!-- navigation -->
         <div id="nav" role="navigation">
             <div id="nav-logo"></div>
-            <button id="nav-mark"><?= \F3::get('lang_markread')?></button>
-
-            <div id="nav-filter-wrapper">
-            <h2 id="nav-filter-title" class="nav-filter-expanded" tabindex="0" aria-haspopup="true" aria-expanded="true"><?= \F3::get('lang_filter') ?></h2>
-            <ul id="nav-filter">
-                <li id="nav-filter-newest" class="nav-filter-newest" role="link" tabindex="0"><?= \F3::get('lang_newest')?> <span></span></li>
-                <li id="nav-filter-unread" class="nav-filter-unread" role="link" tabindex="0"><?= \F3::get('lang_unread')?> <span class="unread-count"></span></li>
-                <li id="nav-filter-starred" class="nav-filter-starred" role="link" tabindex="0"><?= \F3::get('lang_starred') ?> <span></span></li>
-            </ul>
-            </div>
 
             <hr>
 
             <div id="nav-tags-wrapper">
-            <h2 id="nav-tags-title" class="nav-tags-expanded" tabindex="0" aria-haspopup="true" aria-expanded="true"><?= \F3::get('lang_tags') ?></h2>
-            <ul id="nav-tags">
-                <li class="active nav-tags-all" role="link" tabindex="0"><?= \F3::get('lang_alltags')?></li>
-            </ul>
-            <h2 id="nav-sources-title" class="nav-sources-collapsed" tabindex="0" aria-haspopup="true" aria-expanded="false"><?= \F3::get('lang_sources') ?></h2>
-            <ul id="nav-sources">
-            </ul>
+
+                <?php
+                    foreach ($this->categories as $category){
+                        $id = 'nav-tags-'.vn_to_str($category->name);
+
+                        $html = "<h2 id=\"".$id."\" class=\"nav-tags-collapsed\" tabindex=\"0\" aria-haspopup=\"true\" aria-expanded=\"false\">".$category->name."<span class=\"badge badge-secondary\">".$category->count."</span></h2>
+                                    <ul id=\"nav-tags\" style=\"display: none;\">";
+
+                        foreach ($category->rules as $rule){
+                            $html .= '<li class="tags">'.$rule->url.'</li>';
+                        }
+
+                        $html .= "</ul>";
+
+                        echo $html;
+
+                        $script = "<script>$('#".$id."').unbind('click').click(function(){
+                                       $('#".$id." + #nav-tags').slideToggle('slow');
+                                       $('#".$id."').toggleClass('nav-tags-collapsed nav-tags-expanded')
+                                       .attr('aria-expanded',function(i,attr){
+                                           return attr=='true'?'false':'true';
+                                       });
+                                    });
+                                </script>";
+                        echo $script;
+                    }
+
+                ?>
+
             </div>
 
             <hr>
-
-            <!-- navigation search input just for smartphone version -->
-            <div id="nav-search" role="search">
-                <input type="search" id="nav-search-term"> <input type="button" id="nav-search-button" value="<?= \F3::get('lang_searchbutton')?>">
-                <hr>
-            </div>
-
-            <button id="nav-refresh" title="<?= trim(\F3::get('lang_refreshbutton')); ?>"></button>
-            <button id="nav-settings" title="<?= trim(\F3::get('lang_settingsbutton')); ?>"></button>
-            <button id="nav-logout" title="<?= trim(\F3::get('lang_logoutbutton')); ?>"></button>
-
-            <?php if ($this->publicMode === true) : ?>
-            <button id="nav-login" title="<?= trim(\F3::get('lang_loginbutton')); ?>"></button>
-            <?php endif; ?>
-
-            <a id="nav-copyright" href="https://selfoss.aditu.de" target="_blank" rel="noopener noreferrer">selfoss <?= \F3::get('version'); ?></a>
         </div>
-
-        <!-- search -->
-        <div id="search" role="search">
-            <input type="search" id="search-term">
-            <button id="search-remove" title="<?= \F3::get('lang_searchremove')?>"><img src="images/remove.png" alt=""></button>
-            <button id="search-button" title="<?= \F3::get('lang_searchbutton')?>"><img src="images/search.png" alt=""></button>
-        </div>
-
-        <ul id="search-list">
-        </ul>
 
         <!-- content -->
-        <div id="content" role="main">
-        </div>
-
-        <div id="stream-buttons">
-            <div class="stream-empty"><?= trim(\F3::get('lang_no_entries')); ?></div>
-            <div class="stream-button stream-more"><span><?= trim(\F3::get('lang_more')); ?></span></div>
-            <div class="stream-button mark-these-read"><span><?= trim(\F3::get('lang_markread')); ?></span></div>
-            <div class="stream-button stream-error"><?= trim(\F3::get('lang_streamerror')); ?></div>
+        <div id="main-content" role="main">
         </div>
 
         <!-- fullscreen popup -->
         <div id="fullscreen-entry"></div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <script src="<?= \helpers\View::getGlobalJsFileName(); ?>"></script>
 </body>

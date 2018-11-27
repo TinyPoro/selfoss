@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@fancyapps/fancybox": "^3.1.20",
-    "jquery": "^2.2.4",
+    "jquery": "^3.3.1",
     "jquery-hotkeys": "^0.2.2",
     "jquery-mousewheel": "^3.1.13",
     "js-cookie": "^2.1.4",

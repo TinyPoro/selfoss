@@ -35,7 +35,8 @@
             "controllers\\": "controllers/",
             "daos\\": "daos/",
             "helpers\\": "helpers/",
-            "spouts\\": "spouts/"
+            "spouts\\": "spouts/",
+            "app\\": "app/"
         }
     },
     "config": {

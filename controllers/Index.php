@@ -2,6 +2,8 @@
 
 namespace controllers;
 
+use app\api\ApiConnector;
+
 /**
  * Controller for root
  *
@@ -10,6 +12,16 @@ namespace controllers;
  * @author     Tobias Zeising <tobias.zeising@aditu.de>
  */
 class Index extends BaseController {
+
+    private $api_connector;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->api_connector = new ApiConnector();
+    }
+
     /**
      * home site
      * html
@@ -32,6 +44,7 @@ class Index extends BaseController {
             // show as full html page
             $this->view->publicMode = \F3::get('public') == 1;
             $this->view->authEnabled = \F3::get('auth')->enabled() === true;
+            $this->view->categories = $this->api_connector->getCategories();
             echo $this->view->render('templates/home.phtml');
 
             return;
