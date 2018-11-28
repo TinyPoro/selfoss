@@ -275,38 +275,112 @@
     <script src="<?= \helpers\View::getGlobalJsFileName(); ?>"></script>
 
     <script>
-        let datas = <?php echo json_encode($this->categories); ?>;
+        $(document).ready(function() {
+            let show_posts = function(id){
+                $.get(
+                    "http://c2.toppick.vn/wp-json/toppick/v1/posts/" + id,
+                    function(data){
+                        let post_list = $('#main-content .container');
 
-        $('#search_rule').keyup(function(){
-            let search_string = $('#search_rule').val();
-            let html = '';
+                        let html = '';
 
-            console.log(search_string);
+                        data.forEach(function(post) {
+                            let id = post.ID,
+                                title = post.post_title,
+                                content = post.post_content,
+                                excerpt = post.post_excerpt,
+                                date = post.post_date;
 
-            if(search_string === ''){
-                html = <?php echo json_encode(initCategories($this)); ?>;
+                            html += '<article class="new-entry d-flex justify-content-between " data-toggle="modal" data-target="#lightbox" id="' + id + '">\n' +
+                                '                    <div class="content">\n' +
+                                '                        <h2 class="post-title mb-2">\n' +
+                                '                            <a target="" href="#">\n' +
+                                title +
+                                '                            </a>\n' +
+                                '                        </h2>\n' +
+                                '                        <p class="post-excerpt">\n' +
+                                excerpt +
+                                '                        </p>\n' +
+                                '                        <div class="post-content" style="display:none;">\n' +
+                                content +
+                                '                        </div>\n' +
+                                '                        <div class="text-mute">\n' +
+                                '                            <a href="#">\n' +
+                                '                                Admin\n' +
+                                '                            </a>\n' +
+                                '                            <div class="text-muted">\n' +
+                                '                                <i class="fa fa-calendar"></i> ' + date + ' \t                    &nbsp;\n' +
+                                '                            </div>\n' +
+                                '                        </div>\n' +
+                                '                        <a title="Báo cáo bài này" href="#" class="d-none d-lg-inline-block z-bookmark" data-p="\' + id + \'"><i class="fas fa-bug"></i></a>\n' +
+                                '                    </div>\n' +
+                                '\n' +
+                                '                    <a style="background: url(https://toppick.vn/wp-content/uploads/2018/11/8-1-200x200.jpg) center /cover;" id="img" target="" class="thumb ml-2 ml-lg-4 d-md-block">\n' +
+                                '\n' +
+                                '                    </a>\n' +
+                                '                </article>';
 
-            }else{
-                html += "<ul id=\"nav-tags\">";
+                        });
 
-                datas.forEach(function(category) {
-                    let rules = category.rules;
+                        post_list.html(html);
 
-                    rules.forEach(function(rule) {
-                        let url = rule.url;
-                        let coderevolution_post_source = rule.coderevolution_post_source;
+                        $('[data-target="#lightbox"]').on('click', function(event) {
+                            let title = $(this).find('.post-title').text(),
+                                content = $(this).find('.post-content').html(),
+                                img_style = $(this).find('#img').attr('style');
 
-                        if(url.indexOf(search_string) >= 0) html += '<li class="tags" id="'+coderevolution_post_source+'">'+url+'</li>';
+                            let url_regex = /(?<=url\().+(?=\))/;
+                            let url = url_regex.exec(img_style);
+
+                            console.log(title, content, img_style, url);
+
+                            $lightbox.find('.close').addClass('hidden');
+                            $lightbox.find('img').attr('src', url);
+                            $lightbox.find('.card-title').text(title);
+                            $lightbox.find('.card-text').html(content);
+                        });
+                    }
+                );
+            };
+
+            let datas = <?php echo json_encode($this->categories); ?>;
+
+            $('#search_rule').keyup(function(){
+                let search_string = $('#search_rule').val();
+                let html = '';
+
+                if(search_string === ''){
+                    html = <?php echo json_encode(initCategories($this)); ?>;
+
+                }else{
+                    html += "<ul id=\"nav-tags\">";
+
+                    datas.forEach(function(category) {
+                        let rules = category.rules;
+
+                        rules.forEach(function(rule) {
+                            let url = rule.url;
+                            let coderevolution_post_source = rule.coderevolution_post_source;
+
+                            if(url.indexOf(search_string) >= 0) html += '<li class="tags" id="'+coderevolution_post_source+'">'+url+'</li>';
+
+                        });
+
 
                     });
 
+                    html += "</ul>";
+                }
 
+                $('#nav-tags-wrapper').html(html);
+
+                $('#nav-tags > li').unbind('click').click(function(){
+                    let id = $(this).attr('id');
+
+                    show_posts(id);
                 });
 
-                html += "</ul>";
-            }
-
-            $('#nav-tags-wrapper').html(html);
+            });
         });
     </script>
 </body>
