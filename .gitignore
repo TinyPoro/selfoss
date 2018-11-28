@@ -6,8 +6,6 @@
 /data/logs/*.log
 /data/sqlite/*.db
 /public/all.*
-!public/all.css
-!public/all.js
 user.css
 user.js
 config.ini
