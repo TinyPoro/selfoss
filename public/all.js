@@ -1716,8 +1716,6 @@ $(document).ready(function() {
             function(data){
                 let post_list = $('#main-content .container');
 
-                post_list.html('');
-
                 let html = '';
 
                 data.forEach(function(post) {

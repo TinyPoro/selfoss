@@ -101,6 +101,39 @@
         return $str;
 
     }
+
+    function initCategories($obj){
+        $result = '';
+
+        foreach ($obj->categories as $category){
+            $id = 'nav-tags-'.vn_to_str($category->name);
+
+            $html = "<h2 id=\"".$id."\" class=\"nav-tags-collapsed\" tabindex=\"0\" aria-haspopup=\"true\" aria-expanded=\"false\">".$category->name."</h2>
+                                    <ul id=\"nav-tags\" style=\"display: none;\">";
+
+            foreach ($category->rules as $rule){
+                $html .= '<li class="tags" id="'.$rule->coderevolution_post_source.'">'.$rule->url.'</li>';
+            }
+
+            $html .= "</ul>";
+
+
+            $result .= $html;
+
+            $script = "<script>$('#".$id."').unbind('click').click(function(){
+                                       $('#".$id." + #nav-tags').slideToggle('slow');
+                                       $('#".$id."').toggleClass('nav-tags-collapsed nav-tags-expanded')
+                                       .attr('aria-expanded',function(i,attr){
+                                           return attr=='true'?'false':'true';
+                                       });
+                                    });
+                                </script>";
+
+            $result .= $script;
+        }
+
+        return $result;
+    }
     ?>
 </head>
 <body class="
@@ -185,34 +218,23 @@
 
             <hr>
 
+            <div class="row no-gutters">
+                <div class="col">
+                    <input class="form-control border-secondary border-right-0 rounded-0" type="search" value="" id="search_rule">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-outline-secondary border-left-0 rounded-0 rounded-right" type="button">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <hr>
+
             <div id="nav-tags-wrapper">
 
                 <?php
-                    foreach ($this->categories as $category){
-                        $id = 'nav-tags-'.vn_to_str($category->name);
-
-                        $html = "<h2 id=\"".$id."\" class=\"nav-tags-collapsed\" tabindex=\"0\" aria-haspopup=\"true\" aria-expanded=\"false\">".$category->name."</h2>
-                                    <ul id=\"nav-tags\" style=\"display: none;\">";
-
-                        foreach ($category->rules as $rule){
-                            $html .= '<li class="tags" id="'.$rule->coderevolution_post_source.'">'.$rule->url.'</li>';
-                        }
-
-                        $html .= "</ul>";
-
-                        echo $html;
-
-                        $script = "<script>$('#".$id."').unbind('click').click(function(){
-                                       $('#".$id." + #nav-tags').slideToggle('slow');
-                                       $('#".$id."').toggleClass('nav-tags-collapsed nav-tags-expanded')
-                                       .attr('aria-expanded',function(i,attr){
-                                           return attr=='true'?'false':'true';
-                                       });
-                                    });
-                                </script>";
-                        echo $script;
-                    }
-
+                    echo initCategories($this);
                 ?>
 
             </div>
@@ -251,5 +273,41 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <script src="<?= \helpers\View::getGlobalJsFileName(); ?>"></script>
+
+    <script>
+        let datas = <?php echo json_encode($this->categories); ?>;
+
+        $('#search_rule').keyup(function(){
+            let search_string = $('#search_rule').val();
+            let html = '';
+
+            console.log(search_string);
+
+            if(search_string === ''){
+                html = <?php echo json_encode(initCategories($this)); ?>;
+
+            }else{
+                html += "<ul id=\"nav-tags\">";
+
+                datas.forEach(function(category) {
+                    let rules = category.rules;
+
+                    rules.forEach(function(rule) {
+                        let url = rule.url;
+                        let coderevolution_post_source = rule.coderevolution_post_source;
+
+                        if(url.indexOf(search_string) >= 0) html += '<li class="tags" id="'+coderevolution_post_source+'">'+url+'</li>';
+
+                    });
+
+
+                });
+
+                html += "</ul>";
+            }
+
+            $('#nav-tags-wrapper').html(html);
+        });
+    </script>
 </body>
 </html>
