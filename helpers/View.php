@@ -22,7 +22,7 @@ class View {
         self::STATIC_RESOURCE_JS => 0,
         self::STATIC_RESOURCE_CSS => 0
     ];
-    public static $staticPrefix = 'all';
+    public static $staticPrefix = 'app';
 
     /**
      * set global view vars
