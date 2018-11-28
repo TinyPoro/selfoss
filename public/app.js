@@ -1599,7 +1599,23 @@ e.preventDefault();e.stopPropagation();if(current.$slide.hasClass("fancybox-anim
 e=e.originalEvent||e;if(currTime-prevTime<250){return;}
 prevTime=currTime;instance[(-e.deltaY||-e.deltaX||e.wheelDelta||-e.detail)<0?"next":"previous"]();});}});})(document,jQuery);
 
-$(document).ready(function() {
+$(document).ready(async function() {
+    let token = '';
+
+    let getToken = async function(){
+        await $.post("http://c2.toppick.vn/wp-json/jwt-auth/v1/token",
+            {
+                username: "admin",
+                password: "admin@demo2016"
+            },
+            function(data,status){
+                token = data.token;
+            });
+
+    };
+
+    await getToken();
+
     let $lightbox = $('#lightbox');
 
     $lightbox.on('shown.bs.modal', function (e) {
@@ -1612,14 +1628,29 @@ $(document).ready(function() {
     let categories = [];
 
     let get_categories = async function(){
+        let num_page = 1;
+
         await $.get(
             "http://c2.toppick.vn/wp-json/wp/v2/categories",
-            function(data){
+            function(data, status, xhr){
+                num_page = xhr.getResponseHeader("X-WP-TotalPages");
+
                 data.forEach(function(category) {
                     categories.push(category);
                 });
             }
         );
+
+        for (let i = 2; i <= num_page; i++){
+            await $.get(
+                "http://c2.toppick.vn/wp-json/wp/v2/categories?page="+i,
+                function(data){
+                    data.forEach(function(category) {
+                        categories.push(category);
+                    });
+                }
+            );
+        }
     };
 
     let gen_add_rule_form = async function(){
@@ -1660,9 +1691,9 @@ $(document).ready(function() {
             '                    <div class="form-group">\n' +
             '                        <label for="crawling_type">Seed Page Crawling Query Type:</label>\n' +
             '                        <select class="form-control" id="crawling_type" name="crawling_type">\n' +
-            '                            <option value="ID">ID</option>\n' +
-            '                            <option value="Class">Class</option>\n' +
-            '                            <option value="Xpath">Xpath</option>\n' +
+            '                            <option value="id">ID</option>\n' +
+            '                            <option value="class">Class</option>\n' +
+            '                            <option value="xpath">Xpath</option>\n' +
             '                        </select>\n' +
             '                    </div>\n' +
             '                    <div class="form-group">\n' +
@@ -1672,9 +1703,9 @@ $(document).ready(function() {
             '                    <div class="form-group">\n' +
             '                        <label for="paginate_type">Seed Page Pagination Query Type:</label>\n' +
             '                        <select class="form-control" id="paginate_type" name="paginate_type">\n' +
-            '                            <option value="ID">ID</option>\n' +
-            '                            <option value="Class">Class</option>\n' +
-            '                            <option value="Xpath">Xpath</option>\n' +
+            '                            <option value="id">ID</option>\n' +
+            '                            <option value="class">Class</option>\n' +
+            '                            <option value="xpath">Xpath</option>\n' +
             '                        </select>\n' +
             '                    </div>\n' +
             '                    <div class="form-group">\n' +
@@ -1698,11 +1729,32 @@ $(document).ready(function() {
                 paginate_type = $('select[name="paginate_type"]').val(),
                 paginate_string = $('input[name="paginate_string"]').val();
 
+            console.log(url);
+            console.log(schedule);
+            console.log(max_post);
+            console.log(category);
+            console.log(crawling_type);
+            console.log(crawling_string);
+            console.log(paginate_type);
+            console.log(paginate_string);
+
             $.ajax({
                 type: "POST",
-                url: url,
-                data: data,
-                success: success,
+                url: "http://c2.toppick.vn/wp-json/toppick/v1/rule",
+                data: {url: url,
+                    schedule: schedule,
+                    max: max_post,
+                    category_id: category,
+                    seed_type: crawling_type,
+                    seed_type_value: crawling_string,
+                    seed_pag_type: paginate_type,
+                    seed_pag_expre: paginate_string,} ,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader ("Authorization", "Bearer " + token);
+                },
+                success: function(data) {
+                    console.log(data)
+                }
             });
 
         });
