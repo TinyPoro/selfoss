@@ -1600,18 +1600,117 @@ e=e.originalEvent||e;if(currTime-prevTime<250){return;}
 prevTime=currTime;instance[(-e.deltaY||-e.deltaX||e.wheelDelta||-e.detail)<0?"next":"previous"]();});}});})(document,jQuery);
 
 $(document).ready(function() {
-    var $lightbox = $('#lightbox');
+    let $lightbox = $('#lightbox');
 
     $lightbox.on('shown.bs.modal', function (e) {
-        var $img = $lightbox.find('img');
+        let $img = $lightbox.find('img');
 
         $lightbox.find('.modal-dialog').css({'width': $img.width()});
         $lightbox.find('.close').removeClass('hidden');
     });
 
-    $('#nav-tags > li').unbind('click').click(function(){
-        var id = $(this).attr('id');
+    let categories = [];
 
+    let get_categories = async function(){
+        await $.get(
+            "http://c2.toppick.vn/wp-json/wp/v2/categories",
+            function(data){
+                data.forEach(function(category) {
+                    categories.push(category);
+                });
+            }
+        );
+    };
+
+    let gen_add_rule_form = async function(){
+        if(categories.length === 0) await get_categories();
+
+        let post_list = $('#main-content .container');
+
+        let category_select_html = '<h1 class="form-title">Tạo luật mới</h1>\n' +
+            '                <hr/>' +
+            '                <form>\n' +
+            '                    <div class="form-group">\n' +
+            '                        <label for="url">Url nguồn:</label>\n' +
+            '                        <input type="text" class="form-control" id="url" name="url" placeholder="https://toppick.vn/">\n' +
+            '                    </div>\n' +
+            '                    <div class="form-group">\n' +
+            '                        <label for="schedule">Thời gian chạy lại(giờ):</label>\n' +
+            '                        <input type="number" class="form-control" id="schedule" name="schedule" value="24">\n' +
+            '                    </div>\n' +
+            '                    <div class="form-group">\n' +
+            '                        <label for="max_post">Số bài viết tối đa lấy trong 1 lần:</label>\n' +
+            '                        <input type="number" class="form-control" id="max_post" name="max_post" value="100">\n' +
+            '                    </div>\n' +
+            '                    <div class="form-group">\n' +
+            '                        <label for="category">Danh mục các bài:</label>\n' +
+            '                        <select class="form-control" id="category" name="category">';
+
+        categories.forEach(function(category) {
+            let id = category.id,
+                name = category.name;
+
+            let category_option_heml = '<option value = "'+id+'">'+name+' ('+id+')</option>';
+
+            category_select_html += category_option_heml;
+        });
+
+        category_select_html += '</select>\n' +
+            '                    </div>\n' +
+            '                    <div class="form-group">\n' +
+            '                        <label for="crawling_type">Seed Page Crawling Query Type:</label>\n' +
+            '                        <select class="form-control" id="crawling_type" name="crawling_type">\n' +
+            '                            <option value="ID">ID</option>\n' +
+            '                            <option value="Class">Class</option>\n' +
+            '                            <option value="Xpath">Xpath</option>\n' +
+            '                        </select>\n' +
+            '                    </div>\n' +
+            '                    <div class="form-group">\n' +
+            '                        <label for="crawling_string">Seed Page Crawling Query String:</label>\n' +
+            '                        <input type="text" class="form-control" id="crawling_string" name="crawling_string">\n' +
+            '                    </div>\n' +
+            '                    <div class="form-group">\n' +
+            '                        <label for="paginate_type">Seed Page Pagination Query Type:</label>\n' +
+            '                        <select class="form-control" id="paginate_type" name="paginate_type">\n' +
+            '                            <option value="ID">ID</option>\n' +
+            '                            <option value="Class">Class</option>\n' +
+            '                            <option value="Xpath">Xpath</option>\n' +
+            '                        </select>\n' +
+            '                    </div>\n' +
+            '                    <div class="form-group">\n' +
+            '                        <label for="paginate_string">Seed Page Pagination Query String:</label>\n' +
+            '                        <input type="text" class="form-control" id="paginate_string" name="paginate_string">\n' +
+            '                    </div>\n' +
+            '\n' +
+            '                    <button type="button" id="submit-rule">Gửi</button>\n' +
+            '                </form>';
+
+        post_list.html(category_select_html);
+
+        $('#submit-rule').click(function(){
+
+            let url = $('input[name="url"]').val(),
+                schedule = $('input[name="schedule"]').val(),
+                max_post = $('input[name="max_post"]').val(),
+                category = $('select[name="category"]').val(),
+                crawling_type = $('select[name="crawling_type"]').val(),
+                crawling_string = $('input[name="crawling_string"]').val(),
+                paginate_type = $('select[name="paginate_type"]').val(),
+                paginate_string = $('input[name="paginate_string"]').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                success: success,
+            });
+
+        });
+    };
+
+    gen_add_rule_form();
+
+    let show_posts = function(id){
         $.get(
             "http://c2.toppick.vn/wp-json/toppick/v1/posts/" + id,
             function(data){
@@ -1678,5 +1777,15 @@ $(document).ready(function() {
                 });
             }
         );
+    };
+
+    $('#nav-tags > li').unbind('click').click(function(){
+        let id = $(this).attr('id');
+
+        show_posts(id);
+    });
+
+    $('#add_rule').unbind('click').click(function(){
+        gen_add_rule_form();
     });
 });
