@@ -1768,7 +1768,7 @@ $(document).ready(async function() {
             function(data){
                 let post_list = $('#main-content .container');
 
-                let html = '';
+                let html = '<h2 id="total-post">Tổng số bài viết là ' + data.length + '</h2><hr>';
 
                 data.forEach(function(post) {
                     let id = post.ID,

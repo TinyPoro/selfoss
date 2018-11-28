@@ -179,10 +179,19 @@ html{height:100%;overflow-x:hidden}body{font:lighter 18px/27px 'OpenSans', Arial
 #add_rule{
     width: 90%;
     margin-left: 0.6rem;
+    background-color: #2bb24c;
+    border-color: #2bb24c;
+    position: absolute;
+    bottom: 1.5rem;
 }
 
 .no-gutters{
     border: 0.6px solid #d9d9d9
+}
+
+#total-post{
+    font-weight: 700;
+    font-size: 27px;
 }
 
 /*fix bs*/
