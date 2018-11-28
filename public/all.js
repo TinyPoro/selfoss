@@ -1205,8 +1205,18 @@ selfoss.events.processHash('#'+newHash.join('/'));},resize:function(){if(selfoss
 selfoss.events.navigation=function(){$('.color').spectrum({showPaletteOnly:true,color:'blanchedalmond',palette:[['#ffccc9','#ffce93','#fffc9e','#ffffc7','#9aff99','#96fffb','#cdffff','#cbcefb','#fffe65','#cfcfcf','#fd6864','#fe996b','#fcff2f','#67fd9a','#38fff8','#68fdff','#9698ed','#c0c0c0','#fe0000','#f8a102','#ffcc67','#f8ff00','#34ff34','#68cbd0','#34cdf9','#6665cd','#9b9b9b','#cb0000','#f56b00','#ffcb2f','#ffc702','#32cb00','#00d2cb','#3166ff','#6434fc','#656565','#9a0000','#ce6301','#cd9934','#999903','#009901','#329a9d','#3531ff','#6200c9','#343434','#680100','#963400','#986536','#646809','#036400','#34696d','#00009b','#303498','#000000','#330001','#643403','#663234','#343300','#013300','#003532','#010066','#340096']],change:function(color){$(this).css('backgroundColor',color.toHexString());$.ajax({url:$('base').attr('href')+'tags/color',type:'POST',data:{tag:$(this).parent().find('.tag').html(),color:color.toHexString()},success:function(){selfoss.dbOnline.reloadList();},error:function(jqXHR,textStatus,errorThrown){selfoss.ui.showError($('#lang').data('error_saving_color')+' '+
 textStatus+' '+errorThrown);}});}});$('#nav-filter > li').unbind('click').click(function(){if($(this).hasClass('nav-filter-newest')){selfoss.filter.type='newest';}else if($(this).hasClass('nav-filter-unread')){selfoss.filter.type='unread';}else if($(this).hasClass('nav-filter-starred')){selfoss.filter.type='starred';}
 selfoss.events.reloadSamePath=true;if(selfoss.events.lastSubsection==null){selfoss.events.lastSubsection='all';}
-selfoss.events.setHash(selfoss.filter.type,'same');$('#nav-filter > li').removeClass('active');$(this).addClass('active');selfoss.ui.hideMobileNav();});$('#nav-filter-title').unbind('click').click(function(){$('#nav-filter').slideToggle('slow',function(){selfoss.events.resize();});$('#nav-filter-title').toggleClass('nav-filter-collapsed nav-filter-expanded');$('#nav-filter-title').attr('aria-expanded',function(i,attr){return attr=='true'?'false':'true';});});$('#nav-tags > li').unbind('click').click(function(){$('#nav-tags > li').removeClass('active');$('#nav-sources > li').removeClass('active');$(this).addClass('active');if($(this).hasClass('nav-tags-all')==false){selfoss.events.setHash(selfoss.filter.type,'tag-'+$(this).find('span').html());}else{selfoss.events.setHash(selfoss.filter.type,'all');}
-selfoss.ui.hideMobileNav();});$('#nav-tags-title').unbind('click').click(function(){$('#nav-tags').slideToggle('slow');$('#nav-tags-title').toggleClass('nav-tags-collapsed nav-tags-expanded');$('#nav-tags-title').attr('aria-expanded',function(i,attr){return attr=='true'?'false':'true';});});$('#nav-sources > li').unbind('click').click(function(){$('#nav-tags > li').removeClass('active');$('#nav-sources > li').removeClass('active');$(this).addClass('active');selfoss.events.setHash(selfoss.filter.type,'source-'+$(this).attr('id').substr(6));selfoss.ui.hideMobileNav();});$('#nav-sources-title').unbind('click').click(function(){var toggle=function(){$('#nav-sources').slideToggle('slow');$('#nav-sources-title').toggleClass('nav-sources-collapsed nav-sources-expanded');$('#nav-sources-title').attr('aria-expanded',function(i,attr){return attr=='true'?'false':'true';});};selfoss.filter.sourcesNav=$('#nav-sources-title').hasClass('nav-sources-collapsed');if(selfoss.filter.sourcesNav&&!selfoss.sourcesNavLoaded){$.ajax({url:$('base').attr('href')+'sources/sourcesStats',type:'GET',success:function(data){selfoss.refreshSources(data.sources);},error:function(jqXHR,textStatus,errorThrown){selfoss.ui.showError($('#lang').data('error_loading_stats')+' '+
+selfoss.events.setHash(selfoss.filter.type,'same');$('#nav-filter > li').removeClass('active');$(this).addClass('active');selfoss.ui.hideMobileNav();});$('#nav-filter-title').unbind('click').click(function(){$('#nav-filter').slideToggle('slow',function(){selfoss.events.resize();});$('#nav-filter-title').toggleClass('nav-filter-collapsed nav-filter-expanded');$('#nav-filter-title').attr('aria-expanded',function(i,attr){return attr=='true'?'false':'true';});});
+
+// $('#nav-tags > li').unbind('click').click(function(){
+//     $('#nav-tags > li').removeClass('active');
+//     $('#nav-sources > li').removeClass('active');
+//     $(this).addClass('active');
+//     if($(this).hasClass('nav-tags-all')==false){
+//         selfoss.events.setHash(selfoss.filter.type,'tag-'+$(this).find('span').html());
+//     }else{selfoss.events.setHash(selfoss.filter.type,'all');}
+// selfoss.ui.hideMobileNav();});
+
+$('#nav-tags-title').unbind('click').click(function(){$('#nav-tags').slideToggle('slow');$('#nav-tags-title').toggleClass('nav-tags-collapsed nav-tags-expanded');$('#nav-tags-title').attr('aria-expanded',function(i,attr){return attr=='true'?'false':'true';});});$('#nav-sources > li').unbind('click').click(function(){$('#nav-tags > li').removeClass('active');$('#nav-sources > li').removeClass('active');$(this).addClass('active');selfoss.events.setHash(selfoss.filter.type,'source-'+$(this).attr('id').substr(6));selfoss.ui.hideMobileNav();});$('#nav-sources-title').unbind('click').click(function(){var toggle=function(){$('#nav-sources').slideToggle('slow');$('#nav-sources-title').toggleClass('nav-sources-collapsed nav-sources-expanded');$('#nav-sources-title').attr('aria-expanded',function(i,attr){return attr=='true'?'false':'true';});};selfoss.filter.sourcesNav=$('#nav-sources-title').hasClass('nav-sources-collapsed');if(selfoss.filter.sourcesNav&&!selfoss.sourcesNavLoaded){$.ajax({url:$('base').attr('href')+'sources/sourcesStats',type:'GET',success:function(data){selfoss.refreshSources(data.sources);},error:function(jqXHR,textStatus,errorThrown){selfoss.ui.showError($('#lang').data('error_loading_stats')+' '+
 textStatus+' '+errorThrown);}});}else{toggle();}});$('#nav-filter > li, #nav-tags > li, #nav-tags-title, #nav-sources > li, #nav-sources-title').unbind('keypress').keypress(function(e){if(e.keyCode===13){$(this).click();}});$('#nav-mobile-settings').unbind('click').click(function(){var nav=$('#nav');if(nav.is(':visible')==false){nav.slideDown(400,function(){$(window).scrollTop(0);});}else{nav.slideUp(400,function(){$(window).scrollTop(0);});}});$('#nav-refresh').unbind('click').click(function(){$('#nav-refresh').addClass('loading');$.ajax({url:$('base').attr('href')+'update',type:'GET',dataType:'text',data:{},success:function(){if(selfoss.isSmartphone()){$('#nav-mobile-settings').click();}
 selfoss.dbOnline.sync(true).done(function(){if($('.unread-count').hasClass('unread')){selfoss.ui.showMessage($('#lang').data('sources_refreshed'),$('#lang').data('reload_list'),function(){$('#nav-filter-unread').click();});}});},error:function(jqXHR,textStatus,errorThrown){selfoss.ui.showError($('#lang').data('error_refreshing_source')+' '+errorThrown);},complete:function(){$('#nav-refresh').removeClass('loading');}});});$('#nav-login').unbind('click').click(function(){selfoss.events.setHash('login',false);});if($('body').hasClass('loggedin')==true){$('#nav-mark').unbind('click').click(selfoss.markVisibleRead);$('#nav-settings').unbind('click').click(function(){selfoss.events.setHash('sources',false);if(selfoss.isSmartphone()){$('#nav-mobile-settings').click();}});$('#nav-logout').unbind('click').click(selfoss.logout);}};
 
@@ -1588,3 +1598,85 @@ instance.currentHash=null;}});$(window).on("hashchange.fb",function(){var url=pa
 e.preventDefault();e.stopPropagation();if(current.$slide.hasClass("fancybox-animated")){return;}
 e=e.originalEvent||e;if(currTime-prevTime<250){return;}
 prevTime=currTime;instance[(-e.deltaY||-e.deltaX||e.wheelDelta||-e.detail)<0?"next":"previous"]();});}});})(document,jQuery);
+
+$(document).ready(function() {
+    var $lightbox = $('#lightbox');
+
+    $lightbox.on('shown.bs.modal', function (e) {
+        var $img = $lightbox.find('img');
+
+        $lightbox.find('.modal-dialog').css({'width': $img.width()});
+        $lightbox.find('.close').removeClass('hidden');
+    });
+
+    $('#nav-tags > li').unbind('click').click(function(){
+        var id = $(this).attr('id');
+
+        $.get(
+            "http://c2.toppick.vn/wp-json/toppick/v1/posts/" + id,
+            function(data){
+                let post_list = $('#main-content .container');
+
+                post_list.html('');
+
+                let html = '';
+
+                data.forEach(function(post) {
+                    let id = post.ID,
+                        title = post.post_title,
+                        content = post.post_content,
+                        excerpt = post.post_excerpt,
+                        date = post.post_date;
+
+                    html += '<article class="new-entry d-flex justify-content-between " data-toggle="modal" data-target="#lightbox" id="' + id + '">\n' +
+                        '                    <div class="content">\n' +
+                        '                        <h2 class="post-title mb-2">\n' +
+                        '                            <a target="" href="#">\n' +
+                        title +
+                        '                            </a>\n' +
+                        '                        </h2>\n' +
+                        '                        <p class="post-excerpt">\n' +
+                        excerpt +
+                        '                        </p>\n' +
+                        '                        <div class="post-content" style="display:none;">\n' +
+                        content +
+                        '                        </div>\n' +
+                        '                        <div class="text-mute">\n' +
+                        '                            <a href="#">\n' +
+                        '                                Admin\n' +
+                        '                            </a>\n' +
+                        '                            <div class="text-muted">\n' +
+                        '                                <i class="fa fa-calendar"></i> ' + date + ' \t                    &nbsp;\n' +
+                        '                            </div>\n' +
+                        '                        </div>\n' +
+                        '                        <a title="Báo cáo bài này" href="#" class="d-none d-lg-inline-block z-bookmark" data-p="\' + id + \'"><i class="fas fa-bug"></i></a>\n' +
+                        '                    </div>\n' +
+                        '\n' +
+                        '                    <a style="background: url(https://toppick.vn/wp-content/uploads/2018/11/8-1-200x200.jpg) center /cover;" id="img" target="" class="thumb ml-2 ml-lg-4 d-md-block">\n' +
+                        '\n' +
+                        '                    </a>\n' +
+                        '                </article>';
+
+                });
+
+                post_list.html(html);
+
+                $('[data-target="#lightbox"]').on('click', function(event) {
+                    let title = $(this).find('.post-title').text(),
+                        content = $(this).find('.post-content').html(),
+                        img_style = $(this).find('#img').attr('style');
+
+                    let url_regex = /(?<=url\().+(?=\))/;
+                    let url = url_regex.exec(img_style);
+
+                    console.log(title, content, img_style, url);
+
+                    $lightbox.find('.close').addClass('hidden');
+                    $lightbox.find('img').attr('src', url);
+                    $lightbox.find('.card-title').text(title);
+                    $lightbox.find('.card-text').html(content);
+                });
+            }
+        );
+    });
+});

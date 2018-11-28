@@ -34,6 +34,8 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
     <!--  RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="feed" />
 
@@ -189,11 +191,11 @@
                     foreach ($this->categories as $category){
                         $id = 'nav-tags-'.vn_to_str($category->name);
 
-                        $html = "<h2 id=\"".$id."\" class=\"nav-tags-collapsed\" tabindex=\"0\" aria-haspopup=\"true\" aria-expanded=\"false\">".$category->name."<span class=\"badge badge-secondary\">".$category->count."</span></h2>
+                        $html = "<h2 id=\"".$id."\" class=\"nav-tags-collapsed\" tabindex=\"0\" aria-haspopup=\"true\" aria-expanded=\"false\">".$category->name."</h2>
                                     <ul id=\"nav-tags\" style=\"display: none;\">";
 
                         foreach ($category->rules as $rule){
-                            $html .= '<li class="tags">'.$rule->url.'</li>';
+                            $html .= '<li class="tags" id="'.$rule->coderevolution_post_source.'">'.$rule->url.'</li>';
                         }
 
                         $html .= "</ul>";
@@ -220,6 +222,26 @@
 
         <!-- content -->
         <div id="main-content" role="main">
+            <div class="container">
+
+
+            </div>
+
+            <div id="lightbox" class="modal fade"
+                 tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <button type="button" class="close hidden" data-dismiss="modal" aria-hidden="true">×</button>
+                    <div class="modal-content">
+                        <div class="card">
+                            <img class="card-img-top" src="" alt="Card image" style="width:100%">
+                            <div class="card-body">
+                                <h4 class="card-title"></h4>
+                                <p class="card-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- fullscreen popup -->
