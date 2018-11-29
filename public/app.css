@@ -198,3 +198,7 @@ html{height:100%;overflow-x:hidden}body{font:lighter 18px/27px 'OpenSans', Arial
 .border-secondary {
      border: none!important;
 }
+
+form label{
+    font-size: 90%;
+}
