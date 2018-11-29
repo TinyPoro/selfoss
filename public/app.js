@@ -1654,12 +1654,10 @@ $(document).ready(async function() {
     };
 
     let get_rule_form = async function(rule_type){
-        let form_html = '';
+        let form_html = '<div class="form-container">';
 
         if(rule_type === 'normal'){
-            form_html =
-                '                <form>\n' +
-                '                    <div class="form-group">\n' +
+            form_html += '                    <div class="form-group">\n' +
                 '                        <label for="url">Url nguồn:</label>\n' +
                 '                        <input type="text" class="form-control" id="url" name="url" placeholder="https://toppick.vn/">\n' +
                 '                    </div>\n' +
@@ -1758,15 +1756,11 @@ $(document).ready(async function() {
                 '                    <div class="form-group">\n' +
                 '                        <label for="strip_class">Strip HTML Elements by Class:</label>\n' +
                 '                        <input type="text" class="form-control" id="strip_class" name="strip_class">\n' +
-                '                    </div>\n' +
-                '\n' +
-                '                    <button class="btn btn-primary" type="button" id="submit-rule">Gửi</button>\n' +
-                '                </form>';
+                '                    </div>\n';
         }
 
         if(rule_type === 'feed'){
-            form_html = '<form>\n' +
-                '                    <div class="form-group">\n' +
+            form_html += '                    <div class="form-group">\n' +
                 '                        <label for="url">Url nguồn:</label>\n' +
                 '                        <input type="text" class="form-control" id="url" name="url" placeholder="https://toppick.vn/">\n' +
                 '                    </div>\n' +
@@ -1801,9 +1795,10 @@ $(document).ready(async function() {
                 '                            </td>\n' +
                 '                        </tr>\n' +
                 '                        </tfoot>\n' +
-                '                    </table>\n' +
-                '                </form>';
+                '                    </table>\n';
         }
+
+        form_html += '</div>';
 
         return form_html;
     };
@@ -1839,11 +1834,14 @@ $(document).ready(async function() {
             '                        </select>\n' +
             '                    </div>\n' +
             '                <hr/>' +
-            '                <div class="form-container">';
+            '                <div>' +
+            '                <form>\n';
 
         add_rule_html += await get_rule_form('normal');
 
-        add_rule_html += "</div>";
+        add_rule_html += '\n' +
+            '                    <button class="btn btn-primary" type="button" id="submit-rule">Gửi</button>\n' +
+            '                </form>';
 
         post_list.html(add_rule_html);
 
@@ -1898,7 +1896,34 @@ $(document).ready(async function() {
             }
 
             if(rule_type === 'feed'){
-                //to do feed upload
+                let title = $('input[name="url"]').val(),
+                    campaign_feeds = [],
+                    campaign_cats = [];
+
+                title = title.replace(/\/$/g,"");
+
+                $('input.feed_name').each(function(key, element){
+                    campaign_feeds.push(element.value);
+                });
+
+                $('select.categories').each(function(key, element){
+                    campaign_cats.push(element.value);
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://c2.toppick.vn/wp-json/toppick/v1/feed",
+                    data: {title: title,
+                        campaign_feeds: campaign_feeds,
+                        campaign_cats: campaign_cats,
+                    } ,
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader ("Authorization", "Bearer " + token);
+                    },
+                    success: function(data) {
+                        console.log(data)
+                    }
+                });
             }
 
 
