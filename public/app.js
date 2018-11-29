@@ -1658,7 +1658,16 @@ $(document).ready(async function() {
 
         let post_list = $('#main-content .container');
 
+        //form html
         let category_select_html = '<h1 class="form-title">Tạo luật mới</h1>\n' +
+            '                <hr/>' +
+            '                    <div class="form-group">\n' +
+            '                        <label for="rule_type">Loại nguồn:</label>\n' +
+            '                        <select class="form-control" id="rule_type" name="rule_type">\n' +
+            '                            <option value="normal">Normal</option>\n' +
+            '                            <option value="feed">Feed</option>\n' +
+            '                        </select>\n' +
+            '                    </div>\n' +
             '                <hr/>' +
             '                <form>\n' +
             '                    <div class="form-group">\n' +
@@ -1673,6 +1682,11 @@ $(document).ready(async function() {
             '                        <label for="max_post">Số bài viết tối đa lấy trong 1 lần:</label>\n' +
             '                        <input type="number" class="form-control" id="max_post" name="max_post" value="100">\n' +
             '                    </div>\n' +
+            '                    <div class="form-check">\n' +
+            '                        <input type="checkbox" class="form-check-input" id="not_scrape_start_url" name="not_scrape_start_url">\n' +
+            '                        <label class="form-check-label" for="not_scrape_start_url">Không lấy trang nguồn</label>\n' +
+            '                    </div>\n' +
+            '                    <br/>' +
             '                    <div class="form-group">\n' +
             '                        <label for="category">Danh mục các bài:</label>\n' +
             '                        <select class="form-control" id="category" name="category">';
@@ -1688,74 +1702,137 @@ $(document).ready(async function() {
 
         category_select_html += '</select>\n' +
             '                    </div>\n' +
-            '                    <div class="form-group">\n' +
-            '                        <label for="crawling_type">Seed Page Crawling Query Type:</label>\n' +
-            '                        <select class="form-control" id="crawling_type" name="crawling_type">\n' +
-            '                            <option value="id">ID</option>\n' +
-            '                            <option value="class">Class</option>\n' +
-            '                            <option value="xpath">Xpath</option>\n' +
-            '                        </select>\n' +
+            '                    <div class="row">\n' +
+            '                       <div class="form-group col-5">\n' +
+            '                           <label for="crawling_type">Seed Page Crawling Query Type:</label>\n' +
+            '                           <select class="form-control" id="crawling_type" name="crawling_type">\n' +
+            '                               <option value="id">ID</option>\n' +
+            '                               <option value="class">Class</option>\n' +
+            '                               <option value="xpath">Xpath</option>\n' +
+            '                           </select>\n' +
+            '                       </div>\n' +
+            '                       <div class="form-group col-7">\n' +
+            '                            <label for="crawling_string">Seed Page Crawling Query String:</label>\n' +
+            '                           <input type="text" class="form-control" id="crawling_string" name="crawling_string">\n' +
+            '                       </div>\n' +
+            '                    </div>\n' +
+            '                    <div class="row">\n' +
+            '                       <div class="form-group col-5">\n' +
+            '                           <label for="paginate_type">Seed Page Pagination Query Type:</label>\n' +
+            '                           <select class="form-control" id="paginate_type" name="paginate_type">\n' +
+            '                               <option value="id">ID</option>\n' +
+            '                               <option value="class">Class</option>\n' +
+            '                               <option value="xpath">Xpath</option>\n' +
+            '                           </select>\n' +
+            '                       </div>\n' +
+            '                       <div class="form-group col-7">\n' +
+            '                           <label for="paginate_string">Seed Page Pagination Query String:</label>\n' +
+            '                           <input type="text" class="form-control" id="paginate_string" name="paginate_string">\n' +
+            '                       </div>\n' +
+            '                    </div>\n' +
+            '                    <div class="row">\n' +
+            '                       <div class="form-group col-5">\n' +
+            '                           <label for="content_type">Content Query Type:</label>\n' +
+            '                           <select class="form-control" id="content_type" name="content_type">\n' +
+            '                               <option value="id">ID</option>\n' +
+            '                               <option value="class">Class</option>\n' +
+            '                               <option value="xpath">Xpath</option>\n' +
+            '                           </select>\n' +
+            '                       </div>\n' +
+            '                       <div class="form-group col-7">\n' +
+            '                           <label for="content_string">Content Query String:</label>\n' +
+            '                           <input type="text" class="form-control" id="content_string" name="content_string">\n' +
+            '                       </div>\n' +
+            '                    </div>\n' +
+            '                    <div class="row">\n' +
+            '                       <div class="form-group col-5">\n' +
+            '                           <label for="post_paginate_type">Post Pagination Link Query Type:</label>\n' +
+            '                           <select class="form-control" id="post_paginate_type" name="post_paginate_type">\n' +
+            '                                <option value="id">ID</option>\n' +
+            '                               <option value="class">Class</option>\n' +
+            '                               <option value="xpath">Xpath</option>\n' +
+            '                           </select>\n' +
+            '                       </div>\n' +
+            '                       <div class="form-group col-7">\n' +
+            '                           <label for="post_paginate_string">Post Pagination Link Query String:</label>\n' +
+            '                           <input type="text" class="form-control" id="post_paginate_string" name="post_paginate_string">\n' +
+            '                       </div>\n' +
+            '                    </div>\n' +
+            '                    <div class="row">\n' +
+            '                       <div class="form-group col-5">\n' +
+            '                            <label for="title_type">Title Query Type:</label>\n' +
+            '                           <select class="form-control" id="title_type" name="title_type">\n' +
+            '                                <option value="id">ID</option>\n' +
+            '                               <option value="class">Class</option>\n' +
+            '                               <option value="xpath">Xpath</option>\n' +
+            '                           </select>\n' +
+            '                       </div>\n' +
+            '                       <div class="form-group col-7">\n' +
+            '                           <label for="title_string">Title Query String:</label>\n' +
+            '                           <input type="text" class="form-control" id="title_string" name="title_string">\n' +
+            '                       </div>\n' +
             '                    </div>\n' +
             '                    <div class="form-group">\n' +
-            '                        <label for="crawling_string">Seed Page Crawling Query String:</label>\n' +
-            '                        <input type="text" class="form-control" id="crawling_string" name="crawling_string">\n' +
+            '                        <label for="strip_id">Strip HTML Elements by ID:</label>\n' +
+            '                        <input type="text" class="form-control" id="strip_id" name="strip_id">\n' +
             '                    </div>\n' +
             '                    <div class="form-group">\n' +
-            '                        <label for="paginate_type">Seed Page Pagination Query Type:</label>\n' +
-            '                        <select class="form-control" id="paginate_type" name="paginate_type">\n' +
-            '                            <option value="id">ID</option>\n' +
-            '                            <option value="class">Class</option>\n' +
-            '                            <option value="xpath">Xpath</option>\n' +
-            '                        </select>\n' +
-            '                    </div>\n' +
-            '                    <div class="form-group">\n' +
-            '                        <label for="paginate_string">Seed Page Pagination Query String:</label>\n' +
-            '                        <input type="text" class="form-control" id="paginate_string" name="paginate_string">\n' +
+            '                        <label for="strip_class">Strip HTML Elements by Class:</label>\n' +
+            '                        <input type="text" class="form-control" id="strip_class" name="strip_class">\n' +
             '                    </div>\n' +
             '\n' +
-            '                    <button type="button" id="submit-rule">Gửi</button>\n' +
+            '                    <button class="btn btn-primary" type="button" id="submit-rule">Gửi</button>\n' +
             '                </form>';
 
         post_list.html(category_select_html);
 
         $('#submit-rule').click(function(){
+            let rule_type = $('select[name="rule_type"]').val();
 
-            let url = $('input[name="url"]').val(),
-                schedule = $('input[name="schedule"]').val(),
-                max_post = $('input[name="max_post"]').val(),
-                category = $('select[name="category"]').val(),
-                crawling_type = $('select[name="crawling_type"]').val(),
-                crawling_string = $('input[name="crawling_string"]').val(),
-                paginate_type = $('select[name="paginate_type"]').val(),
-                paginate_string = $('input[name="paginate_string"]').val();
+            if(rule_type === 'normal'){
+                let url = $('input[name="url"]').val(),
+                    schedule = $('input[name="schedule"]').val(),
+                    max_post = $('input[name="max_post"]').val(),
+                    category = $('select[name="category"]').val(),
+                    crawling_type = $('select[name="crawling_type"]').val(),
+                    crawling_string = $('input[name="crawling_string"]').val(),
+                    paginate_type = $('select[name="paginate_type"]').val(),
+                    paginate_string = $('input[name="paginate_string"]').val(),
+                    content_type = $('select[name="content_type"]').val(),
+                    content_string = $('input[name="content_string"]').val(),
+                    post_paginate_type = $('select[name="post_paginate_type"]').val(),
+                    post_paginate_string = $('input[name="post_paginate_string"]').val(),
+                    title_type = $('select[name="title_type"]').val(),
+                    title_string = $('input[name="title_string"]').val(),
+                    strip_id = $('input[name="strip_id"]').val(),
+                    strip_class = $('input[name="strip_class"]').val(),
+                    not_scrape_start_url = $('input[name="not_scrape_start_url"]').is(":checked");
 
-            console.log(url);
-            console.log(schedule);
-            console.log(max_post);
-            console.log(category);
-            console.log(crawling_type);
-            console.log(crawling_string);
-            console.log(paginate_type);
-            console.log(paginate_string);
+                // $.ajax({
+                //     type: "POST",
+                //     url: "http://c2.toppick.vn/wp-json/toppick/v1/rule",
+                //     data: {url: url,
+                //         schedule: schedule,
+                //         max: max_post,
+                //         category_id: category,
+                //         seed_type: crawling_type,
+                //         seed_type_value: crawling_string,
+                //         seed_pag_type: paginate_type,
+                //         seed_pag_expre: paginate_string,} ,
+                //     beforeSend: function(xhr) {
+                //         xhr.setRequestHeader ("Authorization", "Bearer " + token);
+                //     },
+                //     success: function(data) {
+                //         console.log(data)
+                //     }
+                // });
+            }
 
-            $.ajax({
-                type: "POST",
-                url: "http://c2.toppick.vn/wp-json/toppick/v1/rule",
-                data: {url: url,
-                    schedule: schedule,
-                    max: max_post,
-                    category_id: category,
-                    seed_type: crawling_type,
-                    seed_type_value: crawling_string,
-                    seed_pag_type: paginate_type,
-                    seed_pag_expre: paginate_string,} ,
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader ("Authorization", "Bearer " + token);
-                },
-                success: function(data) {
-                    console.log(data)
-                }
-            });
+            if(rule_type === 'feed'){
+
+            }
+
+
 
         });
     };
