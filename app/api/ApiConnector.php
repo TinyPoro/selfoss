@@ -57,9 +57,23 @@ class ApiConnector
     }
 
     private function getRuleByCategory($category_id){
-        $response = $this->client->get($this->start_url."/toppick/v1/rules/$category_id");
+        $total_rules = [];
+
+        $total_rules = array_merge($total_rules, $this->getRuleByCategoryAndEndPoint("/toppick/v1/rules/$category_id"));
+
+        //to do feed rule
+
+        return $total_rules;
+    }
+
+    private function getRuleByCategoryAndEndPoint($end_point, $type = 'normal'){
+        $response = $this->client->get($this->start_url."$end_point");
 
         $rules = json_decode($response->getBody()->getContents());
+
+        foreach ($rules as $rule){
+            $rule->type = $type;
+        }
 
         return $rules;
     }

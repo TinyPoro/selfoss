@@ -112,7 +112,7 @@
                                     <ul id=\"nav-tags\" style=\"display: none;\">";
 
             foreach ($category->rules as $rule){
-                $html .= '<li class="tags" id="'.$rule->coderevolution_post_source.'">'.$rule->url.'</li>';
+                $html .= '<li class="tags" id="'.$rule->coderevolution_post_source.'" data-type="'.$rule->type.'">'.$rule->url.'</li>';
             }
 
             $html .= "</ul>";
@@ -271,7 +271,7 @@
 
     <script>
         $(document).ready(function() {
-            let show_posts = function(id){
+            let show_posts = function(id, type){
                 $.get(
                     "http://c2.toppick.vn/wp-json/toppick/v1/posts/" + id,
                     function(data){
@@ -371,8 +371,9 @@
 
                 $('#nav-tags > li').unbind('click').click(function(){
                     let id = $(this).attr('id');
+                    let type = $(this).attr('data-type');
 
-                    show_posts(id);
+                    show_posts(id, type);
                 });
 
             });

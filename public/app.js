@@ -1654,8 +1654,6 @@ $(document).ready(async function() {
     };
 
     let get_rule_form = async function(rule_type){
-        if(categories.length === 0) await get_categories();
-
         let form_html = '';
 
         if(rule_type === 'normal'){
@@ -1677,14 +1675,7 @@ $(document).ready(async function() {
                 '                        <label for="category">Danh mục các bài:</label>\n' +
                 '                        <select class="form-control" id="category" name="category">';
 
-            categories.forEach(function(category) {
-                let id = category.id,
-                    name = category.name;
-
-                let category_option_html = '<option value = "'+id+'">'+name+' ('+id+')</option>';
-
-                form_html += category_option_html;
-            });
+            form_html += await getCategoriesOption();
 
             form_html += '</select>\n' +
                 '                    </div>\n' +
@@ -1774,15 +1765,67 @@ $(document).ready(async function() {
         }
 
         if(rule_type === 'feed'){
-            form_html = "<p>Not supported</p>";
+            form_html = '<form>\n' +
+                '                    <div class="form-group">\n' +
+                '                        <label for="url">Url nguồn:</label>\n' +
+                '                        <input type="text" class="form-control" id="url" name="url" placeholder="https://toppick.vn/">\n' +
+                '                    </div>\n' +
+                '                    <table id="table_feeds" class=" table order-list">\n' +
+                '                        <thead>\n' +
+                '                        <tr class="row">\n' +
+                '                            <td class="col-sm-5">Feed</td>\n' +
+                '                            <td class="col-sm-5">Category</td>\n' +
+                '                        </tr>\n' +
+                '                        </thead>\n' +
+                '                        <tbody>\n' +
+                '                        <tr class="row">\n' +
+                '                            <td class="col-sm-4">\n' +
+                '                                <input type="text" name="feed_name" class="form-control feed_name" />\n' +
+                '                            </td>\n' +
+                '                            <td class="col-sm-4">\n' +
+                '                                <select class="form-control categories" name="categories">\n';
+
+            form_html += await getCategoriesOption();
+
+            form_html +=   '                                </select>\n' +
+                '                            </td>\n' +
+                '                            <td class="col-sm-2"><a class="deleteRow"></a>\n' +
+                '\n' +
+                '                            </td>\n' +
+                '                        </tr>\n' +
+                '                        </tbody>\n' +
+                '                        <tfoot>\n' +
+                '                        <tr class="row">\n' +
+                '                            <td class="col-sm-7" style="text-align: left;">\n' +
+                '                                <input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" />\n' +
+                '                            </td>\n' +
+                '                        </tr>\n' +
+                '                        </tfoot>\n' +
+                '                    </table>\n' +
+                '                </form>';
         }
 
         return form_html;
     };
 
-    let gen_add_rule_form = async function(){
+    let getCategoriesOption = async function(){
         if(categories.length === 0) await get_categories();
 
+        let categories_option_html = '';
+
+        categories.forEach(function(category) {
+            let id = category.id,
+                name = category.name;
+
+            let category_option_html = '<option value = "'+id+'">'+name+' ('+id+')</option>';
+
+            categories_option_html += category_option_html;
+        });
+
+        return categories_option_html;
+    };
+
+    let gen_add_rule_form = async function(){
         let post_list = $('#main-content .container');
 
         //form html
@@ -1855,7 +1898,7 @@ $(document).ready(async function() {
             }
 
             if(rule_type === 'feed'){
-
+                //to do feed upload
             }
 
 
@@ -1871,12 +1914,47 @@ $(document).ready(async function() {
             let form_html = await get_rule_form(type);
 
             post_list.html(form_html);
+
+            if(type === 'feed'){
+                var counter = 0;
+
+                $("#addrow").on("click", async function () {
+                    var newRow = $("<tr class=\"row\">");
+                    var cols = "";
+
+                    cols += '<td class="col-sm-4">\n' +
+                        '                            <input type="text" name="feed_name" class="form-control feed_name" />\n' +
+                        '                        </td>';
+                    cols += '<td class="col-sm-4">\n' +
+                        '                            <select class="form-control categories" name="categories">\n';
+
+                    cols += await getCategoriesOption();
+
+                    cols += '                            </select>\n' +
+                        '                        </td>';
+
+                    cols += '<td><input type="button" class="ibtnDel btn btn-md btn-danger "  value="Delete"></td>';
+                    newRow.append(cols);
+                    $("table.order-list").append(newRow);
+                    counter++;
+                });
+
+
+
+                $("table.order-list").on("click", ".ibtnDel", function (event) {
+                    $(this).closest("tr").remove();
+                    counter -= 1
+                });
+            }
         });
     };
 
     gen_add_rule_form();
 
-    let show_posts = function(id){
+    let show_posts = function(id, type){
+        console.log(type);
+
+        //to do feed post
         $.get(
             "http://c2.toppick.vn/wp-json/toppick/v1/posts/" + id,
             function(data){
@@ -1945,8 +2023,9 @@ $(document).ready(async function() {
 
     $('#nav-tags > li').unbind('click').click(function(){
         let id = $(this).attr('id');
+        let type = $(this).attr('data-type');
 
-        show_posts(id);
+        show_posts(id, type);
     });
 
     $('#add_rule').unbind('click').click(function(){
