@@ -1712,6 +1712,7 @@ $(document).ready(async function() {
                 '                               <option value="id">ID</option>\n' +
                 '                               <option value="class">Class</option>\n' +
                 '                               <option value="xpath">Xpath</option>\n' +
+                '                               <option value="regex">Regex</option>\n' +
                 '                           </select>\n' +
                 '                       </div>\n' +
                 '                       <div class="form-group col-7">\n' +
@@ -1726,7 +1727,6 @@ $(document).ready(async function() {
                 '                                <option value="id">ID</option>\n' +
                 '                               <option value="class">Class</option>\n' +
                 '                               <option value="xpath">Xpath</option>\n' +
-                '                               <option value="regex">Regex</option>\n' +
                 '                           </select>\n' +
                 '                       </div>\n' +
                 '                       <div class="form-group col-7">\n' +
